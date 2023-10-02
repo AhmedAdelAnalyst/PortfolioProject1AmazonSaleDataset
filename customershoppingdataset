@@ -1,0 +1,152 @@
+
+-- Exploring the data and limit by 1000
+
+SELECT * 
+FROM `fifth-name-386113.customer_shopping_data.customer_shoppin` 
+LIMIT 1000
+
+-- Checking for null values in customer id colume
+
+
+SELECT 
+      customer_id,
+      COALESCE(customer_id) = 'null' AS launched_indicator
+ FROM `fifth-name-386113.customer_shopping_data.customer_shoppin`
+
+
+-- Exploring the data where customer id is not null 
+
+
+Select *
+From `fifth-name-386113.customer_shopping_data.customer_shoppin`
+Where customer_id is not null 
+order by 3,4
+
+-- Calculate the total number of quantity and customers by gender
+
+
+SELECT
+      gender ,
+      SUM(quantity) AS total_quantity, 
+      COUNT( DISTINCT customer_id) AS number_of_customer_id 
+ FROM `fifth-name-386113.customer_shopping_data.customer_shoppin`  
+ GROUP BY gender 
+ HAVING SUM(quantity) > 5
+
+-- Exploring the top payed 20 customers
+
+SELECT customer_id,price
+FROM `fifth-name-386113.customer_shopping_data.customer_shoppin`
+ORDER BY price DESC
+ LIMIT 20 --top 20 results only
+
+
+-- Exploring the number of sales in technology category
+
+SELECT 
+      IF(category='Technology', 'technology category', 'other category') AS tech_category, 
+      COUNT(invoice_no) AS number_of_invoices 
+FROM `fifth-name-386113.customer_shopping_data.customer_shoppin` 
+GROUP BY 1 
+
+-- Exploring the number of payment mehod for invoices
+
+SELECT 
+     CASE 
+         WHEN payment_method = 'Debit Card' THEN 'With Debit Card'
+         WHEN payment_method = 'Credit Card' THEN 'With Credit Card'
+         ELSE 'Cash 'END AS watch_category, COUNT (invoice_no) AS number_of_invoices 
+FROM 
+`fifth-name-386113.customer_shopping_data.customer_shoppin` 
+GROUP BY 1
+
+ 
+-- Create temp table for gender,total quantity and total invoices
+
+CREATE TEMP TABLE quantitybygender
+      AS
+        SELECT
+              gender, 
+              SUM(quantity) AS total_quantity,
+              COUNT(invoice_no) AS number_of_invoices 
+FROM `fifth-name-386113.customer_shopping_data.customer_shoppin` 
+GROUP BY gender
+
+-- Calculate quantity by gender where quantity more than 5
+
+SELECT 
+      gender,
+      total_quantity, 
+      number_of_invoices 
+FROM quantitybygender 
+WHERE quantity > 4
+
+-- TOAL QUANTITY OF TECKNOLOGY CATEGORY SOLD IN EVERY MALL
+
+Select 
+      shopping_mall,
+      category, 
+      SUM(cast(quantity as int)) as total_quantity
+From `fifth-name-386113.customer_shopping_data.customer_shoppin`
+Where category like 'Technology' 
+Group by shopping_mall,category
+order by 3 DESC
+
+
+
+-- SALES BY GENDER AND AGE
+
+Select 
+      gender,
+      age,
+      SUM(cast(price as int)) as total_revenue
+From `fifth-name-386113.customer_shopping_data.customer_shoppin` 
+Group by gender,age
+order by total_revenue desc
+
+
+-- SALES BY GENDER AND PAYMENT METHOD
+
+Select
+      gender,
+      payment_method,
+      SUM(cast(price as int)) as total_revenue
+From `fifth-name-386113.customer_shopping_data.customer_shoppin`
+Where customer_id is not null 
+Group BY gender,payment_method
+order by total_revenue desc
+
+
+-- SHOWING CATEGORY WITH THE HIGHEST REVENUE
+
+Select 
+      category, 
+      SUM(cast(price as int)) as total_revenue
+From `fifth-name-386113.customer_shopping_data.customer_shoppin`
+Where customer_id is not null 
+Group by category
+order by total_revenue desc
+
+
+
+-- Total revenue of all shopping mall in all years
+
+Select
+      shopping_mall,
+      SUM(cast(price as int)) as total_revenue,
+      SUM(cast(quantity as int)) as total_quantity
+From `fifth-name-386113.customer_shopping_data.customer_shoppin`
+where customer_id is not null 
+Group By shopping_mall
+order by total_revenue desc
+
+-- Revenue of all shopping malls and total quantity in 2022
+select 
+      shopping_mall ,
+      SUM(cast(price as int)) as total_revenue, 
+      SUM(cast(quantity as int)) as total_quantity
+from `fifth-name-386113.customer_shopping_data.customer_shoppin`
+where  invoice_date >= '2022-01-01' 
+       and invoice_date < '2023-01-01'
+Group By shopping_mall 
+order by total_revenue desc
