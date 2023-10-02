@@ -1,0 +1,189 @@
+-- Exploring the data and limit by 1000 
+
+SELECT * 
+FROM `careful-broker-386113.bank.bank_customer` 
+LIMIT 1000
+
+--- checking for null values in surname colume
+
+SELECT 
+      Surname, 
+      COALESCE(Surname)  AS launched_indicator 
+FROM `careful-broker-386113.bank.bank_customer` 
+
+
+-- Calculate Total Number of Customers,Unique Customers and Churned Customers
+
+SELECT
+       gender,
+       COUNT(CustomerId) AS total_Customers,
+       COUNT( DISTINCT CustomerId) AS total_Unique_customers,
+       SUM(Exited) AS total_Churned_Customers   
+ FROM `careful-broker-386113.bank.bank_customer`  
+ GROUP BY gender 
+
+-- Exploring the highest 20 customers in balance
+
+SELECT CustomerId,Balance,
+FROM `careful-broker-386113.bank.bank_customer` 
+ORDER BY Balance DESC
+LIMIT 20 --top 20 results only
+
+-- Exploring the number of customers by card type and categorize the result
+
+SELECT 
+        CASE Card_Type 
+             WHEN 'DIAMOND'THEN 'Premium CUSTOMER' 
+             ELSE 'Normal CUSTOMER' 
+             END AS CUSTOMER_TYPE ,
+         COUNT(customerid) AS total_Customers
+FROM `careful-broker-386113.bank.bank_customer`
+GROUP BY 1
+
+-- Exploring the number of customers inside and outside germany and categorize the result 
+
+SELECT 
+      IF(Geography='Germany', 'Inside Germany', 'Outside Germany') AS german_customers,
+     COUNT(customerid) AS number_of_movies 
+FROM `careful-broker-386113.bank.bank_customer` 
+GROUP BY 1 
+
+-- Exploring the satisfaction score of customers and categorize the result 
+
+
+SELECT 
+      CASE 
+          WHEN Satisfaction_Score = 5 THEN 'High Satisfied Customer'
+          WHEN Satisfaction_Score = 1 THEN 'Low Satisfied Customer' 
+          ELSE 'Medium Satisfied Customer' END AS watch_category,
+      COUNT( DISTINCT CustomerId) AS number_of_customer_id
+FROM 
+`careful-broker-386113.bank.bank_customer` 
+GROUP BY 1
+
+
+
+-- create temp table for customers by region
+
+CREATE TEMP TABLE Customersbyregion
+   AS
+   SELECT
+   gender,Geography,CreditScore, COUNT( DISTINCT CustomerId) AS number_of_customer_id
+FROM `careful-broker-386113.bank.bank_customer`
+GROUP BY gender,Geography
+
+-- credit score and total number of customers located in germany 
+
+SELECT 
+      CreditScore,
+      number_of_customer_id
+FROM Customersbyregion 
+WHERE Geography = 'Germany'
+
+
+-- Credit Score Of Customers Between 800 and 1000 point earned
+select
+      Geography,
+      CreditScore,
+      COUNT( DISTINCT CustomerId) AS number_of_customer_id
+from `careful-broker-386113.bank.bank_customer`
+where  Point_Earned >= 800
+       and Point_Earned <= 1000
+Group By Geography,CreditScore
+
+
+-- Calculate Churn Rate By Dividing Number Of Exited Customers By Total Number of Customers
+
+SELECT 
+      (SUM(Exited)/COUNT(CustomerId)) * 100 AS Churn_Rate,  
+ FROM `careful-broker-386113.bank.bank_customer` 
+
+
+-- Calculate Avg Customer Age and Number of Products
+
+SELECT
+      AVG(cast(NumOfProducts as int)) AS AVG_NumOfProducts, 
+      AVG( cast(Age as int)) AS AVG_Age,
+ FROM `careful-broker-386113.bank.bank_customer`  
+
+--Churn By Age
+
+SELECT 
+      Age,
+      COUNT(CustomerId) AS total_CustomerId,
+      (SUM(Exited)/COUNT(CustomerId)) * 100 AS Churn_Rate
+ FROM `careful-broker-386113.bank.bank_customer`  
+ GROUP BY Age 
+ ORDER BY Churn_Rate DESC
+
+
+--Churn By Tenure
+
+SELECT 
+      Tenure ,
+      COUNT(CustomerId) AS total_CustomerId,
+      (SUM(Exited)/COUNT(CustomerId)) * 100 AS Churn_Rate
+ FROM `careful-broker-386113.bank.bank_customer`  
+ GROUP BY Tenure  
+ ORDER BY Churn_Rate DESC
+
+
+--Churn By Country
+
+SELECT 
+      Geography,
+      (SUM(Exited)/COUNT(CustomerId)) * 100 AS Churn_Rate
+ FROM `careful-broker-386113.bank.bank_customer`  
+ GROUP BY Geography  
+ ORDER BY Churn_Rate DESC
+
+
+-- Answering Question of is Active Member Complaning?
+
+SELECT 
+       IsActiveMember,Complain,
+       (SUM(Exited)/COUNT(CustomerId)) * 100 AS Churn_Rate
+ FROM `careful-broker-386113.bank.bank_customer`  
+ GROUP BY IsActiveMember,Complain  
+ ORDER BY Churn_Rate DESC
+
+-- CardTypes Churn Rate 
+
+SELECT
+       Card_Type,
+       Tenure,
+       COUNT(CustomerId) AS total_CustomerId ,
+       (SUM(Exited)/COUNT(CustomerId)) * 100 AS Churn_Rate
+ FROM `careful-broker-386113.bank.bank_customer`  
+ GROUP BY Card_Type,Tenure  
+ ORDER BY Churn_Rate DESC
+
+--Churn By Number of Products
+
+SELECT 
+       NumOfProducts,
+       COUNT(CustomerId) AS total_CustomerId ,
+       (SUM(Exited)/COUNT(CustomerId)) * 100 AS Churn_Rate
+ FROM `careful-broker-386113.bank.bank_customer`  
+ GROUP BY NumOfProducts
+ ORDER BY Churn_Rate DESC
+
+--Churn By Satisfaction Score
+
+SELECT 
+      Satisfaction_Score,
+      COUNT(CustomerId) AS total_CustomerId ,
+      (SUM(Exited)/COUNT(CustomerId)) * 100 AS Churn_Rate
+ FROM `careful-broker-386113.bank.bank_customer`  
+ GROUP BY Satisfaction_Score
+ ORDER BY Churn_Rate DESC
+
+--Churn By Points Earned
+
+SELECT 
+      Point_Earned,
+      COUNT(CustomerId) AS total_CustomerId ,
+      (SUM(Exited)/COUNT(CustomerId)) * 100 AS Churn_Rate
+ FROM `careful-broker-386113.bank.bank_customer`  
+ GROUP BY Point_Earned 
+ ORDER BY Churn_Rate DESC
