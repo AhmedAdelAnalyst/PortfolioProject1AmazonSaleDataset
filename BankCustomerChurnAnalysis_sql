@@ -1,9 +1,10 @@
 BANK CUSTOMER CHURN ANALYSIS
-A loyal customer base says a lot about a business. Not only does it indicate that their customers enjoy their products or services, but they also put in the effort to foster relationships with them. Loyal customers are more likely to continue to support a business and choose them over competitors, as well as recommend the business to their peers and colleagues.
-It’s much easier to keep an existing customer than it is to get a new one. As a business owner, this means focusing more on nurturing customer relationships with your current customers than trying to expand your audience with new ones. This is also why it’s so important to be aware of your customer churn rate.
-Customer churn is the rate at which a business loses customers. A high customer churn rate indicates that a large percentage of your customers no longer want to purchase your products or services for various reasons, which can be a sign that your business is lacking in certain departments.
-The dataset that will be used today was provided by Kaggle. It has information about 10k bank customers . Its features allow viewing Customers  from multiple dimensions, from CreditScore, Tenure, Balance ,Complain, Satisfaction Score ,Card Type, Point Earned to customer location and product attributes. I'll use SQL Big Querry for the analysis and Tableau puplic for the visualisation. 
 
+The dataset that will be used today was provided by Kaggle. It has information about 10k bank customers .
+Its features allow viewing Customers  from multiple dimensions, from CreditScore, Tenure, Balance ,Complain,
+Satisfaction Score ,Card Type, Point Earned to customer location and product attributes. I'll use SQL Big Querry 
+for the analysis and Tableau public for the visualisation. 
+ 
 
 -- Exploring the data and limit by 1000 
 
